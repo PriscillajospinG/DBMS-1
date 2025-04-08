@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Employee Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    body.dark-mode {
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #profile, #salary, #attendance {
+      margin-top: 30px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    h2, h3 {
+      color: #336699;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Welcome, Employee</h2>
+  <button onclick="toggleDarkMode()">🌙 Toggle Mode</button>
+  <button onclick="logout()">🚪 Logout</button>
+
+  <div id="profile"></div>
+  <div id="salary"></div>
+  <div id="attendance"></div>
+
+  <script>
+    // 🌙 Dark Mode Toggle
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+  
+    // 🧠 Load theme and data on page load
+    window.onload = () => {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+  
+      // ✅ Get employee_id from URL (NOT localStorage)
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get('employee_id');
+  
+      if (!userId || isNaN(parseInt(userId))) {
+        alert('User not logged in. Redirecting...');
+        window.location.href = '/login.html';
+        return;
+      }
+  
+      // 🧑 Fetch employee dashboard data
+      fetch(`/api/employee/dashboard/${parseInt(userId)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) {
+            alert(data.message || 'Failed to fetch employee details');
+            return;
+          }
+  
+          const { employee, salary, attendance } = data;
+  
+          document.getElementById('profile').innerHTML = `
+            <h3>Profile</h3>
+            <p><strong>Name:</strong> ${employee.name}</p>
+            <p><strong>Department:</strong> ${employee.department}</p>
+            <p><strong>Role:</strong> ${employee.role}</p>
+          `;
+  
+          document.getElementById('salary').innerHTML = `
+            <h3>Salary</h3>
+            <p><strong>Basic:</strong> ₹${salary.basic}</p>
+            <p><strong>HRA:</strong> ₹${salary.hra}</p>
+            <p><strong>Allowances:</strong> ₹${salary.allowances}</p>
+          `;
+  
+          document.getElementById('attendance').innerHTML = `
+            <h3>Attendance</h3>
+            <ul>
+              ${attendance.map(record => `<li>${record.date}: ${record.status}</li>`).join('')}
+            </ul>
+          `;
+        })
+        .catch(error => {
+          console.error('Dashboard fetch error:', error);
+          alert('Error loading dashboard. Try again later.');
+        });
+    };
+  
+    // 🚪 Logout
+    function logout() {
+      localStorage.clear();
+      window.location.href = '/login.html';
+    }
+  </script>
+</body>
+</html>

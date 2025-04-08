@@ -1,0 +1,90 @@
+<!-- frontend/login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Payroll System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login</h2>
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Toggle Mode</button>
+    <label for="role">Select Role:</label>
+    <select id="role">
+      <option value="employee">Employee</option>
+      <option value="admin">Admin</option>
+    </select>
+    <input type="text" id="username" placeholder="Employee ID / Username" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button onclick="handleLogin()">Login</button>
+    <p id="error-msg" style="color: red;"></p>
+  </div>
+
+  <script>
+    async function handleLogin() {
+      const role = document.getElementById('role').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+
+      try {
+        let res;
+        if (role === 'employee') {
+          res = await fetch('/api/auth/login/employee', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ employee_id: username, password })
+          });
+        } else {
+          res = await fetch('/api/auth/login/admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+        }
+
+        const data = await res.json();
+
+        if (data.success) {
+          // ✅ Redirect based on role
+          if (role === 'employee') {
+            window.location.href = `/dashboard_employee.html?employee_id=${username}`;  // ✅ fixed
+          } else {
+            window.location.href = `/dashboard_admin.html`;
+          }
+        } else {
+          errorMsg.textContent = data.message || "Invalid credentials!";
+        }
+      } catch (err) {
+        console.error(err);
+        errorMsg.textContent = "Server error. Please try again later.";
+      }
+    }
+  </script>
+
+<script>
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+
+    // Optional: Save preference to localStorage
+    if (document.body.classList.contains('dark-mode')) {
+      localStorage.setItem('theme', 'dark');
+    } else {
+      localStorage.setItem('theme', 'light');
+    }
+  }
+
+  // Load saved theme on page load
+  window.onload = () => {
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+    }
+  };
+</script>
+
+
+
+</body>
+</html>
