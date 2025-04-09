@@ -52,21 +52,17 @@
   <div id="attendance"></div>
 
   <script>
-    // 🌙 Dark Mode Toggle
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
       localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
     }
   
-    // 🧠 Load theme and data on page load
     window.onload = () => {
       if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-mode');
       }
   
-      // ✅ Get employee_id from URL (NOT localStorage)
-      const urlParams = new URLSearchParams(window.location.search);
-      const userId = urlParams.get('employee_id');
+      const userId = localStorage.getItem('employee_id');
   
       if (!userId || isNaN(parseInt(userId))) {
         alert('User not logged in. Redirecting...');
@@ -74,7 +70,6 @@
         return;
       }
   
-      // 🧑 Fetch employee dashboard data
       fetch(`/api/employee/dashboard/${parseInt(userId)}`)
         .then(res => res.json())
         .then(data => {
@@ -87,22 +82,25 @@
   
           document.getElementById('profile').innerHTML = `
             <h3>Profile</h3>
-            <p><strong>Name:</strong> ${employee.name}</p>
+            <p><strong>Name:</strong> ${employee.employee_name}</p>
             <p><strong>Department:</strong> ${employee.department}</p>
-            <p><strong>Role:</strong> ${employee.role}</p>
+            <p><strong>Role:</strong> ${employee.position}</p>
           `;
   
           document.getElementById('salary').innerHTML = `
             <h3>Salary</h3>
-            <p><strong>Basic:</strong> ₹${salary.basic}</p>
-            <p><strong>HRA:</strong> ₹${salary.hra}</p>
-            <p><strong>Allowances:</strong> ₹${salary.allowances}</p>
+            <p><strong>Base Salary:</strong> ₹${salary.base_salary}</p>
+            <p><strong>Bonus:</strong> ₹${salary.bonus}</p>
+            <p><strong>Deductions:</strong> ₹${salary.deductions}</p>
           `;
   
           document.getElementById('attendance').innerHTML = `
             <h3>Attendance</h3>
             <ul>
-              ${attendance.map(record => `<li>${record.date}: ${record.status}</li>`).join('')}
+              ${attendance.map(record => {
+                const date = new Date(record.attendance_date).toLocaleDateString();
+                return `<li>${date}: ${record.status}</li>`;
+              }).join('')}
             </ul>
           `;
         })
@@ -112,7 +110,6 @@
         });
     };
   
-    // 🚪 Logout
     function logout() {
       localStorage.clear();
       window.location.href = '/login.html';

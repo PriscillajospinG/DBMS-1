@@ -50,8 +50,12 @@
         if (data.success) {
           // ✅ Redirect based on role
           if (role === 'employee') {
+            localStorage.setItem('employee_id', username); 
+            localStorage.setItem('role', 'employee'); 
             window.location.href = `/dashboard_employee.html?employee_id=${username}`;  // ✅ fixed
           } else {
+            localStorage.setItem('username', username);
+            localStorage.setItem('role', 'admin');
             window.location.href = `/dashboard_admin.html`;
           }
         } else {

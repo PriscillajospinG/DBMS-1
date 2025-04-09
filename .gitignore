@@ -1,0 +1,10 @@
+# Virtual environment
+venv/
+.env/
+
+# Editor settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

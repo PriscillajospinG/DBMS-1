@@ -23,6 +23,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/api/auth', authRoutes);
 app.use('/api/employee', employeeRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api', adminRoutes); 
 
 // 🌐 Root route redirects to login.html
 app.get('/', (req, res) => {

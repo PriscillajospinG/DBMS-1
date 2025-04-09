@@ -2,14 +2,13 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// 📋 Get all employees
 router.get('/employees', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM employees');
     res.json({ success: true, employees: result.rows });
-  } catch (error) {
-    console.error('Error fetching employees:', error);
-    res.status(500).json({ success: false, error: 'Internal server error' });
+  } catch (err) {
+    console.error('Error fetching employees:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 

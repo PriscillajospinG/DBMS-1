@@ -3,22 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
-  <style>
-    body.dark-mode {
-      background-color: #121212;
-      color: #ffffff;
-    }
 
-    input, button, select {
-      display: block;
-      margin: 8px 0;
-      padding: 8px;
-    }
-
-    h2, h3 {
-      margin-top: 20px;
-    }
-  </style>
 </head>
 <body>
   <h2>Welcome Admin</h2>
@@ -59,6 +44,18 @@
     <button onclick="markAttendance()">✔️ Mark</button>
   </section>
 
+  <section>
+    <h3>Update Employee</h3>
+    <input type="number" id="updateId" placeholder="Employee ID to update" required>
+    <input type="text" id="updateName" placeholder="Updated Name">
+    <input type="text" id="updateDept" placeholder="Updated Department">
+    <input type="text" id="updatePos" placeholder="Updated Position">
+    <input type="date" id="updateDate" placeholder="Updated Hire Date">
+    <input type="number" id="updateSalary" placeholder="Updated Base Salary">
+    <input type="password" id="updatePwd" placeholder="Updated Password">
+    <button onclick="updateEmployee()">✏️ Update Employee</button>
+  </section>
+
   <button onclick="logout()">🚪 Logout</button>
 
   <script>
@@ -86,6 +83,7 @@
       window.location.href = '/login.html';
     }
   </script>
+  <link rel="stylesheet" href="css/style.css" />
 
   <script src="js/admin_dashboard.js"></script>
 </body>

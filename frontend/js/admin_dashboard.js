@@ -1,15 +1,20 @@
-async function getAllEmployees() {
-    const res = await fetch('/api/admin/employees');
-    const data = await res.json();
-  
-    const list = document.getElementById('employeeList');
-    list.innerHTML = '';
-    data.forEach(emp => {
-      const li = document.createElement('li');
-      li.innerText = `ID: ${emp.employee_id}, Name: ${emp.employee_name}, Dept: ${emp.department}`;
-      list.appendChild(li);
+function getAllEmployees() {
+  fetch('/api/employees')
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById('employeeList');
+      list.innerHTML = '';
+      data.employees.forEach(emp => {
+        const li = document.createElement('li');
+        li.innerText = `ID: ${emp.employee_id}, Name: ${emp.employee_name}, Dept: ${emp.department}`;
+        list.appendChild(li);
+      });
+    })
+    .catch(err => {
+      console.error('Error fetching employees:', err);
+      alert('Error loading employees. Try again later.');
     });
-  }
+}
   
   document.getElementById('addEmployeeForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -59,6 +64,49 @@ async function getAllEmployees() {
     localStorage.clear();
     window.location.href = 'index.html';
   }
-  
+
+  async function updateEmployee() {
+  const employee_id = document.getElementById('updateId').value;
+  const employee_name = document.getElementById('updateName').value;
+  const department = document.getElementById('updateDept').value;
+  const position = document.getElementById('updatePos').value;
+  const hire_date = document.getElementById('updateDate').value;
+  const base_salary = document.getElementById('updateSalary').value;
+  const password = document.getElementById('updatePwd').value;
+
+  if (!employee_id) {
+    alert("Please enter the Employee ID.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/employees/${employee_id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        employee_name,
+        department,
+        position,
+        hire_date,
+        base_salary,
+        password
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert("✅ Employee updated successfully!");
+      getAllEmployees(); // refresh list
+    } else {
+      alert("❌ Update failed: " + result.message);
+    }
+  } catch (error) {
+    console.error("Update error:", error);
+    alert("Server error while updating employee.");
+  }
+}
   // Initial load
   getAllEmployees();
